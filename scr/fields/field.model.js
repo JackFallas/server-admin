@@ -3,7 +3,7 @@
 // Imporatacioens
 import mongoose from "mongoose";
 
-const fieldSchema = new mongoose.Schema({
+export const fieldSchema = new mongoose.Schema({
     fieldName: { 
         type: String, 
         required: true,
@@ -45,3 +45,13 @@ const fieldSchema = new mongoose.Schema({
         default: true,
     }
 });
+
+// Indices para optimizar consultas  o las busquedas
+fieldSchema.index({isActive: 1});
+fieldSchema.index({fieldName: 1});
+fieldSchema.index({isActive: 1, fieldName: 1});
+
+// Modelo basado en el schema
+const Field = mongoose.model('Field', fieldSchema);
+
+export default Field;
