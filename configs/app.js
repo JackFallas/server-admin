@@ -1,63 +1,63 @@
-'use strict';
+`use strict`;
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-// Imporatacioens
+//Importaciones
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import { corsOption } from './Cors-configuration.js';
-
-
-// Rutas
-import fieldRouter from '../scr/fields/field.routes.js';
+import { corsOption } from './cors-configuration.js';
+import { dbConnection } from './db.js';
+ 
+ 
+import fieldRoutes from '../scr/fields/field.routes.js'
+ 
 const BASE_URL = '/kinalSportAdmin/v1';
-
+ 
 // Configuracion de los middlewares
-// Confiruracion de mi aplicacion
-// Se almacena en una funciona paar que pueda ser exportada y usada al crear la instancia e la aplicacion
-const middlewares = (app) => {
-    // Configuracion para el limite de tamaño de las peticiones y el permitirlas
+// Se almacenan en una funcion para ser exportados y usados
+const miiddlewares = (app) => {
+    // Permite el uso de formulario y su limite de tamaño es de 10mb
     app.use(express.urlencoded({ extended: false, limit: '10mb' }));
-    // Configuracion para el parseo de JSON (le dice a app que puede usar json con limite de 10mb)
+    // Permite el uso de JSON y su limite de tamaño es de 10mb
     app.use(express.json({ limit: '10mb' }));
-    // Configuracion de CORS
+    // Configuracion de CORS la cual se define en un archivo aparte y se importa, la cual permite definir los origenes permitidos
     app.use(cors(corsOption));
-    // Configuracion de Morgan para el logueo de peticiones HTTP (usar el morgan en modo desarrollador)
+    // Permite el uso de morgan en modo desarrollo
     app.use(morgan('dev'));
 }
-
-//Integracion de todas las rutas
+ 
+//Integracion de rutas
 const routes = (app) => {
-    app.use(`${BASE_URL}/fields`, fieldRouter);
+    app.use(`${BASE_URL}/fields`, fieldRoutes);
 }
-
+ 
 // Funcion para iniciar el servidor
 const initServer = async (app) => {
-    // Crreacion de la instancia de la aplicacion
+    // Creacion de la instancia de la aplicacion
     app = express();
     const PORT = process.env.PORT || 3001;
     try {
         // Configuracion de los middlewares (Mi aplicacion)
-        middlewares(app);
+        dbConnection();
+        miiddlewares(app);
         routes(app);
-
-        app.listen(PORT, () => {
+ 
+        app.listen( PORT, () => {
             console.log(`Servidor corriendo en el puerto ${PORT}`);
-            console.log(`URL base: http://localhost:${PORT}${BASE_URL}`);
+            console.log(`URL Base: http://localhost:${PORT}${BASE_URL}`);
         });
-
-        // Primera ruta 
-        app.get(`${BASE_URL}/health`, (req, res) => {
-            res.status(200).json(
-                {
-                    statys: 'ok',
-                    service: 'Kinal Sport Admin',
-                    version: '1.0.0'
-                }
+ 
+        app.get(`${BASE_URL}/HEAD`, (req, res) => {
+            res.status(200).json({
+                status: 'success',
+                service: 'KinalSport Admin',
+                version: '1.0.0'
+             }
             );
         });
     } catch (error) {
-        console.log(error);  
+        console.error('Error al iniciar el servidor:', error);
+       
     }
 }
-
-export { initServer };
+export { initServer};

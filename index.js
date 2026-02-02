@@ -6,7 +6,7 @@ import { initServer } from './configs/app.js';
 dotenv.config();
 
 // Iniciar el servidor
-initServer();
+// initServer();
 
 // Errores no capturados
 process.on('uncaughtException', (err) =>{
