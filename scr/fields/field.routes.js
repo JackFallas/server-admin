@@ -13,7 +13,8 @@ import {
     validateGetFieldById,
 } from '../../middlewares/field-validators.js';
 import { uploadFieldImage } from '../../middlewares/file-uploader.js';
- 
+import { cleanupUploadesFileOnFinish} from "../../middlewares/delete-dile-on-error.js"
+
 const router = Router();
  
 // Rutas GET
@@ -24,6 +25,7 @@ router.get('/:id', validateGetFieldById, getFieldById);
 router.post(
     '/',
     uploadFieldImage.single('image'),
+    cleanupUploadesFileOnFinish,
     validateCreateField,
     createField
 );
